@@ -1,0 +1,6 @@
+/ubuntu.sh
+/px4.sh
+/simulation.sh
+/nuttx.sh
+/requirements.txt
+/install_geographiclib_datasets.sh

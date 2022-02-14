@@ -1,0 +1,11 @@
+arm:
+  arm_joint_controller:
+    type: "position_controllers/JointTrajectoryController"
+    joints:
+      - joint1
+      - joint2
+
+    gains:
+      joint1:   {p: 10.0, i: 0.1, d: 0.1, i_clamp: 1.0}
+      joint2:   {p: 10.0, i: 0.1, d: 0.1, i_clamp: 1.0}
+

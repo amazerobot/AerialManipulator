@@ -1,0 +1,320 @@
+<?xml version="1.0"?>
+<!-- Open_Manipulator Chain -->
+<robot name="open_manipulator" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find mobot_urdf)/urdf/3-axis/open_manipulator.gazebo.xacro" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find mobot_urdf)/urdf/3-axis/materials.xacro" />
+
+ <xacro:macro name="cylinder_inertial_matrix" params="m r h">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
+                izz="${m*r*r/2}" /> 
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="box_inertial_matrix" params="m w h d">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${m*(h*h+d*d)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(w*w+d*d)/12}" iyz = "0"
+                izz="${m*(w*w+h*h)/12}" /> 
+        </inertial>
+    </xacro:macro>
+
+ <!-- link1 properties -->
+    <xacro:property name="link1_radius" value="0.015" />
+    <xacro:property name="link1_length" value="0.2" />
+    <xacro:property name="link1_mass" value="0.5" />
+
+    <!-- link2 properties -->
+    <xacro:property name="link2_radius" value="0.015" />
+    <xacro:property name="link2_length" value="0.2" />
+    <xacro:property name="link2_mass" value="0.5" />
+
+
+  <!-- Link 1 -->
+  <link name="link1">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+     <cylinder_inertial_matrix m="${link1_mass}" r="${link1_radius}" h="${link1_length}"/>
+  </link>
+
+
+  <joint name="arm_fixed" type="fixed">
+    <origin xyz="0 0 -0.021" rpy="3.1415926 0 0"/>
+    <parent link="base_link"/>
+    <child link="link1"/>
+  </joint>
+
+
+  <!-- Joint 1 -->
+  <joint name="joint1" type="fixed">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0.012 0.0 0.017" rpy="0 0 0"/>
+  </joint>
+
+
+
+  <!--  Link 2 -->
+  <link name="link2">
+    <visual>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+     <cylinder_inertial_matrix m="${link2_mass}" r="${link2_radius}" h="${link2_length}"/>
+  </link>
+
+  <!--  Joint 2 -->
+  <joint name="joint2" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0.0 0.0 0.0595" rpy="0 -1.326 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="10" effort="300" lower="${-pi*0.57+1.326}" upper="${pi*0.5+1.326}" />
+  </joint>
+
+
+
+  <!--  Link 3 -->
+  <link name="link3">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+     <inertial>
+      <origin xyz="1.0308393e-02 3.7743363e-04 1.0170197e-01" />
+      <mass value="1.3850917e-01" />
+      <inertia ixx="3.3055381e-04" ixy="-9.7940978e-08" ixz="-3.8505711e-05"
+               iyy="3.4290447e-04" iyz="-1.5717516e-06"
+               izz="6.0346498e-05" />
+    </inertial>
+  </link>
+
+  <!--  Joint 3 -->
+  <joint name="joint3" type="revolute">
+    <parent link="link3"/>
+    <child link="link4"/>
+    <origin xyz="0.024 0 0.128" rpy="0 1.2 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="10" effort="300" lower="${-pi*0.3-1.3}" upper="${pi*0.44+1.2}" />
+  </joint>
+
+
+
+  <!--  Link 4 -->
+  <link name="link4">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="9.0909590e-02 3.8929816e-04 2.2413279e-04" />
+      <mass value="1.3274562e-01" />
+      <inertia ixx="3.0654178e-05" ixy="-1.2764155e-06" ixz="-2.6874417e-07"
+               iyy="2.4230292e-04" iyz="1.1559550e-08"
+               izz="2.5155057e-04" />
+    </inertial>
+  </link>
+
+  <!--  Joint 4 -->
+  <joint name="joint4" type="fixed">
+    <parent link="link4"/>
+    <child link="link5"/>
+    <origin xyz="0.124 0.0 0.0" rpy="0 0.2 0"/>
+  </joint>
+
+
+
+  <!--  Link 5 -->
+  <link name="link5">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+      <cylinder_inertial_matrix m="${link1_mass-0.3}" r="${link1_radius}" h="${link1_length}"/>
+  </link>
+
+  <!--  Gripper link -->
+  <link name="gripper_link">
+    <visual>
+      <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link_grip_l.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link_grip_l.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+   <inertial>
+      <origin xyz="${0.028 + 8.3720668e-03} ${0.0246 + 9.9696160e-03} -4.2836895e-07" />
+      <mass value="3.2218127e-02" />
+      <inertia ixx="9.5568826e-06" ixy="2.8424644e-06" ixz="-3.2829197e-10"
+               iyy="2.2552871e-05" iyz="-3.1463634e-10"
+               izz="1.7605306e-05" />
+    </inertial>
+  </link>
+
+  <!--  Gripper joint -->
+  <joint name="gripper" type="fixed">
+    <parent link="link5"/>
+    <child link="gripper_link"/>
+    <origin xyz="0.0817 0.021 0.0" rpy="0 0 0"/>
+  </joint>
+
+
+
+  <!--  Gripper link sub -->
+  <link name="gripper_link_sub">
+    <visual>
+      <origin xyz="0.0 -0.0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link_grip_r.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0.0 -0.0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mobot_urdf/meshes/chain_link_grip_r.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+   <inertial>
+      <origin xyz="${0.028 + 8.3720668e-03} ${-0.0246 - 9.9696160e-03} -4.2836895e-07" />
+      <mass value="3.2218127e-02" />
+      <inertia ixx="9.5568826e-06" ixy="2.8424644e-06" ixz="-3.2829197e-10"
+               iyy="2.2552871e-05" iyz="-3.1463634e-10"
+               izz="1.7605306e-05" />
+    </inertial>
+  </link>
+
+  <!--  Gripper joint sub -->
+  <joint name="gripper_sub" type="fixed">
+    <parent link="link5"/>
+    <child link="gripper_link_sub"/>
+    <origin xyz="0.0817 -0.021 0" rpy="0 0 0"/>
+  </joint>
+
+
+
+  <!-- end effector joint -->
+  <joint name="end_effector_joint" type="fixed">
+    <origin xyz="0.126 0.0 0.0" rpy="0 0 0"/>
+    <parent link="link5"/>
+    <child link="end_effector_link"/>
+  </joint>
+
+  <!-- end effector link -->
+  <link name="end_effector_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+      <material name="red"/>
+     </visual>
+
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia ixx="1.0e-06" ixy="0.0" ixz="0.0" iyy="1.0e-06" iyz="0.0" izz="1.0e-06" />
+    </inertial>
+  </link>
+
+
+
+  <xacro:macro name="transmission_block" params="joint_name">
+            <transmission name="${joint_name}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${joint_name}">
+                    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${joint_name}_motor">
+                    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                    <mechanicalReduction>10</mechanicalReduction>
+                </actuator>
+            </transmission>
+        </xacro:macro>
+
+        <xacro:transmission_block joint_name="joint2"/>
+        <xacro:transmission_block joint_name="joint3"/>
+
+	 <gazebo>
+            <plugin name="arm_gazebo_ros_control" filename="libgazebo_ros_control.so">
+		<controlPeriod>0.004</controlPeriod>
+                <robotNamespace>/arm</robotNamespace>
+                <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+	        <legacyModeNS>true</legacyModeNS>
+            </plugin>
+        </gazebo>
+
+
+
+</robot>

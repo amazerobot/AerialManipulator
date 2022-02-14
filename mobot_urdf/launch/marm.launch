@@ -1,0 +1,42 @@
+<launch>
+ 
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="0"/>
+ 
+    <arg name="robot_description" default="robot_description"/>
+
+ 
+    <!-- gazebo configs -->
+    <arg name="gui" default="true"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="paused" default="false"/>
+    <arg name="respawn_gazebo" default="false"/>
+ 
+ 
+    <!-- Gazebo sim -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="verbose" value="$(arg verbose)"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="respawn_gazebo" value="$(arg respawn_gazebo)"/>
+    </include>
+
+   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find mobot_urdf)/urdf/arm.xacro'"/>
+   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+     args="-urdf -model arm -x 0 -y 0 -z 0 -param robot_description"/>
+
+    <!-- ros_control arm launch file -->
+    <include file="$(find mobot_urdf)/launch/marm_gazebo_states.launch" />   
+
+    <!-- moveit launch file -->
+    <include file="$(find marm_moveit_config)/launch/moveit_planning_execution.launch" />
+
+ # <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mobot_urdf)/urdf/3-axis/test.rviz"/>
+
+</launch>

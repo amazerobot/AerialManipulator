@@ -1,0 +1,33 @@
+<?xml version='1.0'?>
+<sdf version='1.4'>
+  <model name="mark_aruco10">
+ <static>true</static>
+    <link name='link'>
+      <pose>0 0 0 0 0 0</pose>
+      
+      <collision name='collision'>
+        <geometry>
+                <box>
+                  <size>0.3 0.3 0.01</size>
+                </box>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <geometry>
+                <box>
+                  <size>0.3 0.3 0.01</size>
+                </box>
+        </geometry>
+
+        <material>
+          <script>
+            <uri>model://mark_aruco10/materials/scripts</uri>
+            <uri>model://mark_aruco10/materials/textures</uri>
+            <name>Mark_arcuo10/Diffuse</name>
+          </script>
+        </material>
+      </visual>
+    </link>     
+  </model>
+</sdf>

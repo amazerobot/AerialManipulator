@@ -1,0 +1,44 @@
+<?xml version='1.0'?>
+<sdf version='1.4'>
+  <model name="mark_ar_track1">
+    <static>true</static>
+    <link name='link'>
+      <pose>0 0 0.6 0 0 0</pose>
+      <inertial>
+        <mass>0.390</mass>
+        <inertia>
+          <ixx>0.00058</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00058</iyy>
+          <iyz>0</iyz>
+          <izz>0.00019</izz>
+        </inertia>
+      </inertial>
+
+      <collision name='collision'>
+        <geometry>
+                <box>
+                  <size>0.5 0.01 0.5</size>
+                </box>
+        </geometry>
+      </collision>
+
+      <visual name='visual'>
+        <geometry>
+                <box>
+                  <size>0.5 0.01 0.5</size>
+                </box>
+        </geometry>
+
+        <material>
+          <script>
+            <uri>model://mark_ar_track1/materials/scripts</uri>
+            <uri>model://mark_ar_track1/materials/textures</uri>
+            <name>Mark_ar_track1/Diffuse</name>
+          </script>
+        </material>
+      </visual>
+    </link>     
+  </model>
+</sdf>

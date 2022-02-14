@@ -1,0 +1,15 @@
+material Mark_ar_track1/Diffuse
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ar1.png
+        filtering anistropic
+        max_anisotropy 16
+      }
+    }
+  }
+}

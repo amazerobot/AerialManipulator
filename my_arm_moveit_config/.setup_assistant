@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: mobot_urdf
+    relative_path: urdf/iris/my_arm.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/my_arm.srdf
+  CONFIG:
+    author_name: sch
+    author_email: sunchanghaosch@163.com
+    generated_timestamp: 1592645823

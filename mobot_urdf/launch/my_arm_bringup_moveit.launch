@@ -1,0 +1,40 @@
+<launch>
+  
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <!-- We resume the logic in empty_world.launch -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find mobot_urdf)/world/ar.world"/>
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find mobot_urdf)/urdf/my_arm.xacro'" /> 
+ <node name="robot_state_publisher2" pkg="robot_state_publisher" type="robot_state_publisher" />
+   <node name="joint_state_publisher2" pkg="joint_state_publisher" type="joint_state_publisher"/>
+ 
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model my_arm -param robot_description"/> 
+
+    <!-- ros_control arm launch file -->
+    <include file="$(find mobot_urdf)/launch/iris_arm_gazebo_states.launch" />   
+    <!-- ros_control trajectory control dof arm launch file -->
+    <include file="$(find mobot_urdf)/launch/my_arm_trajectory_controller.launch" />
+    <!-- moveit launch file -->
+    <include file="$(find my_arm_moveit_config)/launch/moveit_planning_execution.launch" />
+
+ <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mobot_urdf)/rviz_config/iris_w_arm.rviz"/>
+</launch>
+
+

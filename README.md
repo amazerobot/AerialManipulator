@@ -8,6 +8,7 @@
 
 - [仿真环境配置](./docs/1.md)
 - [机械臂建模与机械臂运动控制](./docs/2.md)
+- [机械臂视觉](./docs/3.md)
 
 ## Videos Tutorials
 

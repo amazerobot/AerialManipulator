@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<robot name="my_arm" xmlns:xacro="http://ros.org/wiki/xacro">
+
+<!--Add Arm-->
+<xacro:include filename="$(find mobot_urdf)/urdf/air_arm.xacro" />
+   <arm_base parent="sensor" xyz="0 0 -0.01" rpy="3.1415926 0 0"/>
+
+<xacro:include filename="$(find mobot_urdf)/urdf/kinect_gazebo.xacro" />
+<xacro:property name="M_PI" value="3.1415926"/>
+<xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
+  <!-- kinect -->
+   <joint name="kinect_joint" type="fixed">
+        <origin xyz="0 0 0.044" rpy="0 0 0" />
+        <parent link="link6"/>
+        <child link="kinect_link"/>
+    </joint>
+    <xacro:kinect_camera prefix="kinect"/>
+
+ <link name="base_link">
+        		<visual>
+			<origin xyz=" 0 0 0.02"  rpy="0 0 0"/>
+			    <geometry>
+				   <box size="0.1 0.1 0.02" />
+			    </geometry>
+			<material name="Black" />
+        		</visual>
+        <collision>
+            <origin xyz=" 0 0 0.02"  rpy="0 0 0"/>
+            <geometry>
+                <box size="0.1 0.1 0.02" />
+            </geometry>
+        </collision>
+        <box_inertial_matrix m="1000" w="1" h="0.02" d="1"/>
+    </link>
+
+     <link name="sensor">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.02 0.02 0.02" />
+                </geometry>
+            </visual>
+	 <collision>
+            <origin xyz=" 0 0 0"  rpy="0 0 0"/>
+            <geometry>
+                <box size="0.02 0.02 0.02" />
+            </geometry>
+        </collision>
+        </link>
+
+        <joint name="sensor_joint" type="fixed">
+            <origin xyz="0 0 0.4" rpy="0 0 0" />        
+            <parent link="base_link"/>
+            <child link="sensor" />
+        </joint>
+
+ <gazebo reference="sensor">
+            <material>Gazebo/Red</material>
+ </gazebo>
+
+      <gazebo reference="base_link">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+
+<gazebo reference="sensor_joint">
+     <provideFeedback>true</provideFeedback>
+     <disableFixedJointLumping>true</disableFixedJointLumping>
+</gazebo>
+
+<gazebo>
+    <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+      <updateRate>10.0</updateRate>
+      <topicName>ft_sensor_topic</topicName>
+      <jointName>sensor_joint</jointName>
+    </plugin>
+</gazebo>
+</robot>

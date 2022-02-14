@@ -1,0 +1,826 @@
+<?xml version="1.0"?>
+<robot name="arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Defining the colors used in this robot -->
+    <material name="Black">
+        <color rgba="0 0 0 1"/>
+    </material>
+    <material name="White">
+        <color rgba="1 1 1 1"/>
+    </material>
+    <material name="Blue">
+        <color rgba="0 0 1 1"/>
+    </material>
+    <material name="Red">
+        <color rgba="1 0 0 1"/>
+    </material>
+
+    <!-- Constants -->
+    <xacro:property name="M_PI" value="3.14159265357"/>
+
+    <!-- link0 properties -->
+    <xacro:property name="link0_radius" value="0.03" />
+    <xacro:property name="link0_length" value="0.015" />
+    <xacro:property name="link0_mass" value="0.2" />
+
+    <!-- link1 properties -->
+    <xacro:property name="link1_radius" value="0.03" />
+    <xacro:property name="link1_length" value="0.02" />
+    <xacro:property name="link1_mass" value="0.2" />
+
+    <!-- link2 properties -->
+    <xacro:property name="link2_radius" value="0.015" />
+    <xacro:property name="link2_length" value="0.15" />
+    <xacro:property name="link2_mass" value="0.2" />
+
+    <!-- link3 properties -->
+    <xacro:property name="link3_radius" value="0.015" />
+    <xacro:property name="link3_length" value="0.15" />
+    <xacro:property name="link3_mass" value="0.3" />
+
+    <!-- link4 properties -->
+    <xacro:property name="link4_radius" value="0.015" />
+    <xacro:property name="link4_length" value="0.06" />
+    <xacro:property name="link4_mass" value="0.3" />
+
+    <!-- link5 properties -->
+    <xacro:property name="link5_radius" value="0.015" />
+    <xacro:property name="link5_length" value="0.06" />
+    <xacro:property name="link5_mass" value="0.3"/>
+
+    <!-- link6 properties -->
+    <xacro:property name="link6_radius" value="0.035" />
+    <xacro:property name="link6_length" value="0.02" />
+    <xacro:property name="link6_mass" value="0.2"/>
+
+    <!-- gripper -->
+    <xacro:property name="gripper_length" value="0.03" />
+    <xacro:property name="gripper_width" value="0.01" />
+    <xacro:property name="gripper_height" value="0.04" />
+    <xacro:property name="gripper_mass" value="0.09" />
+
+    <!-- vacuum -->
+    <xacro:property name="vac_x" value="0.028" />
+    <xacro:property name="d" value="0.017 " />
+    <xacro:property name="effort" value="100" /> 
+    <xacro:property name="updata" value="1000" />
+ 
+
+    <!-- Gripper frame -->
+    <xacro:property name="grasp_frame_radius" value="0.001" />
+
+    <!-- Macro for inertia matrix -->
+    <xacro:macro name="cylinder_inertial_matrix" params="m r h">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
+                izz="${m*r*r/2}" /> 
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="box_inertial_matrix" params="m w h d">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${m*(h*h+d*d)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(w*w+d*d)/12}" iyz = "0"
+                izz="${m*(w*w+h*h)/12}" /> 
+        </inertial>
+    </xacro:macro>
+
+    <!-- /////////////////////////////////////   ARM BASE    ////////////////////////////////////////////// -->
+    <xacro:macro name="arm_base" params="parent xyz rpy">
+        <joint name="${parent}_arm_joint" type="fixed">
+            <origin xyz="${xyz}" rpy="${rpy}" />        
+            <parent link="${parent}"/>
+            <child link="base_arm" />
+        </joint>
+
+        <link name="base_arm">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.01 0.01 0.005" />
+                </geometry>
+            </visual>
+ 	<collision>
+            <origin xyz=" 0 0 0"  rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.005" />
+            </geometry>
+        </collision>
+        </link>
+
+        <joint name="arm_base_joint" type="fixed">
+            <origin xyz="0 0 ${link0_length/2}" rpy="0 0 0" />        
+            <parent link="base_arm"/>
+            <child link="link0" />
+        </joint>
+
+        <!-- /////////////////////////////////////    LINK0    ////////////////////////////////////////////// -->
+        <link name="link0">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link0_radius}" length="${link0_length}"/>
+                </geometry>
+                <material name="White" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link0_radius-0.008}" length="${link0_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link0_mass}" r="${link0_radius}" h="${link0_length}"/>
+        </link>
+
+        <joint name="joint1" type="revolute">
+            <parent link="link0"/>
+            <child link="link1"/>
+            <origin xyz="0 0 ${link0_length/2}" rpy="0 ${M_PI/2} 0" />
+            <axis xyz="-1 0 0" />
+            <limit effort="300" velocity="1" lower="-1.57" upper="1.57"/>
+        </joint>
+<gazebo reference="joint1">
+     <provideFeedback>true</provideFeedback>
+     <disableFixedJointLumping>true</disableFixedJointLumping>
+</gazebo>
+
+<gazebo>
+    <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+      <updateRate>10.0</updateRate>
+      <topicName>ft_sensor_topic</topicName>
+      <jointName>joint1</jointName>
+    </plugin>
+</gazebo>
+        <!-- /////////////////////////////////////   LINK1  ////////////////////////////////////////////// -->
+        <link name="link1" >
+            <visual>
+                <origin xyz="-${link1_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link1_radius}" length="${link1_length}"/>
+                </geometry>
+                <material name="Blue" />
+            </visual>
+            <collision>
+                <origin xyz="-${link1_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link1_radius-0.008}" length="${link1_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link1_mass}" r="${link1_radius}" h="${link1_length}"/>
+        </link>
+
+        <joint name="joint2" type="revolute">
+            <parent link="link1"/>
+            <child link="link2"/>
+            <origin xyz="-${link1_length} 0 0.0" rpy=" ${M_PI+0.5} 0 ${M_PI/2}" />
+            <axis xyz="1 0 0" />
+            <limit effort="300" velocity="1" lower="-3.1" upper="3.1" />
+        </joint>
+
+        <!-- ///////////////////////////////////////   LINK2  ////////////////////////////////////////////// -->
+        <link name="link2" >
+            <visual>
+                <origin xyz="0 0 ${link2_length/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link2_radius}" length="${link2_length}"/>
+                </geometry>
+                <material name="White" />
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 ${link2_length/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link2_radius-0.008}" length="${link2_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link2_mass}" r="${link2_radius}" h="${link2_length}"/>
+        </link>
+
+        <joint name="joint3" type="revolute">
+            <parent link="link2"/>
+            <child link="link3"/>
+            <origin xyz="0 0 ${link2_length}" rpy="-2.57 ${M_PI} 0" />
+            <axis xyz="-1 0 0" />
+            <limit effort="300" velocity="1" lower="-3" upper="1" />
+        </joint>
+
+        <!-- /////////////////////////////////   LINK3  ///////////////////////////////////////////////////// -->
+        <link name="link3" >
+            <visual>
+                <origin xyz="0 0 -${link3_length/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link3_radius}" length="${link3_length}"/>
+                </geometry>
+                <material name="Blue" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 -${link3_length/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link3_radius-0.008}" length="${link3_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link3_mass}" r="${link3_radius}" h="${link3_length}"/>
+        </link>
+
+        <joint name="joint4" type="revolute">
+            <parent link="link3"/>
+            <child link="link4"/>
+            <origin xyz="0.0 0.0 -${link3_length}" rpy="0 ${M_PI/2} ${M_PI}" />
+            <axis xyz="1 0 0" />
+            <limit effort="300" velocity="1" lower="-3.14" upper="3.14" />
+        </joint>
+
+        <!-- ///////////////////////////////////   LINK4  //////////////////////////////////////////////// -->
+        <link name="link4" >
+            <visual>
+                <origin xyz="${link4_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link4_radius}" length="${link4_length}"/>
+                </geometry>
+                <material name="Black" />
+            </visual>
+            <collision>
+                <origin xyz="${link4_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link4_radius-0.008}" length="${link4_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link4_mass}" r="${link4_radius}" h="${link4_length}"/>
+        </link>
+
+        <joint name="joint5" type="revolute">
+            <parent link="link4"/>
+            <child link="link5"/>
+            <origin xyz="${link4_length} 0.0 0.0" rpy="-0.15 ${M_PI/2} 0" />
+            <axis xyz="1 0 0" />
+            <limit effort="300" velocity="1" lower="-1.4" upper="2" />
+        </joint>
+
+        <!-- //////////////////////////////////   LINK5  ///////////////////////////////////////////////// -->
+        <link name="link5">
+            <visual>
+                <origin xyz="0 0 ${link5_length/2}" rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link5_radius}" length="${link5_length}"/>
+                </geometry>
+                <material name="White" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 ${link5_length/2} " rpy="0 0 0" />
+                <geometry>
+                    <cylinder radius="${link5_radius-0.008}" length="${link5_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link5_mass}" r="${link5_radius}" h="${link5_length}"/>
+        </link>
+
+        <joint name="joint6" type="revolute">
+            <parent link="link5"/>
+            <child link="link6"/>
+            <origin xyz="0 0 ${link5_length}" rpy="${1.5*M_PI} -${M_PI/2} 0" />
+            <axis xyz="1 0 0" />
+            <limit effort="300" velocity="1" lower="-3.14" upper="3.14" />
+        </joint>
+
+        <!-- ////////////////////////////////   LINK6  ///////////////////////////////////////////////// -->
+        <link name="link6">
+            <visual>
+                <origin xyz="${link6_length/2} 0 0 " rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link6_radius}" length="${link6_length}"/>
+                </geometry>
+                <material name="Blue" />
+            </visual>
+            <collision>
+                <origin xyz="${link6_length/2} 0 0 " rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <cylinder radius="${link6_radius-0.008}" length="${link6_length/2}"/>
+                </geometry>
+            </collision>
+            <cylinder_inertial_matrix m="${link6_mass}" r="${link6_radius}" h="${link6_length}"/>
+        </link>
+
+    
+
+<!-- //////////////////////   vacuum   //////////////////// -->
+
+ <link name="vacuum_gripper">
+      <gravity>0</gravity>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.005" length="0.01"/>
+        </geometry>
+        <material name="transparent">
+          <color rgba="0 0 0 0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+        <mass value="0.0001"/>
+        <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+      </inertial>
+    </link>
+
+    <joint name="gripper_joint" type="revolute">
+      <axis xyz="1 0 0" />
+      <parent link="link6" />
+      <child link="vacuum_gripper" />
+      <origin rpy="0 1.5708 0" xyz="${vac_x} ${d} 0" />
+      <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+      <dynamics damping="0.0" friction="10"/>
+    </joint>
+
+  <gazebo>
+      <plugin name="gazebo_ros_vacuum_gripper" filename="libgazebo_ros_vacuum_gripper.so">
+        <robotNamespace>/arm/vacuum_gripper</robotNamespace>
+<updateRate>${updata}</updateRate>
+        <bodyName>vacuum_gripper</bodyName>
+        <topicName>grasping</topicName>
+	<maxForce>${effort}</maxForce>
+        <maxDistance>0.05</maxDistance>
+        <minDistance>0.005</minDistance>
+      </plugin>
+  </gazebo>      
+
+ <link name="vacuum_gripper1">
+      <gravity>0</gravity>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.005" length="0.01"/>
+        </geometry>
+        <material name="transparent">
+          <color rgba="0 0 0 0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+        <mass value="0.0001"/>
+        <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+      </inertial>
+    </link>
+
+    <joint name="gripper_joint1" type="revolute">
+      <axis xyz="1 0 0" />
+      <parent link="link6" />
+      <child link="vacuum_gripper1" />
+      <origin rpy="0 1.5708 0" xyz="${vac_x} ${-d} 0" />
+      <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+      <dynamics damping="0.0" friction="10"/>
+    </joint>
+  <gazebo>
+      <plugin name="gazebo_ros_vacuum_gripper1" filename="libgazebo_ros_vacuum_gripper.so">
+        <robotNamespace>/arm/vacuum_gripper1</robotNamespace>
+        <updateRate>${updata}</updateRate>
+        <bodyName>vacuum_gripper1</bodyName>
+        <topicName>grasping1</topicName>
+	<maxForce>${effort}</maxForce>
+        <maxDistance>0.05</maxDistance>
+        <minDistance>0.005</minDistance>
+      </plugin>
+  </gazebo>
+
+<link name="vacuum_gripper2">
+      <gravity>0</gravity>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.005" length="0.01"/>
+        </geometry>
+        <material name="transparent">
+          <color rgba="0 0 0 0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+        <mass value="0.0001"/>
+        <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+      </inertial>
+    </link>
+
+    <joint name="gripper_joint2" type="revolute">
+      <axis xyz="1 0 0" />
+      <parent link="link6" />
+      <child link="vacuum_gripper2" />
+      <origin rpy="0 1.5708 0" xyz="${vac_x} 0 ${d}" />
+      <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+      <dynamics damping="0.0" friction="10"/>
+    </joint>
+
+  <gazebo>
+      <plugin name="gazebo_ros_vacuum_gripper2" filename="libgazebo_ros_vacuum_gripper.so">
+        <robotNamespace>/arm/vacuum_gripper2</robotNamespace>
+        <updateRate>${updata}</updateRate>
+        <bodyName>vacuum_gripper2</bodyName>
+        <topicName>grasping2</topicName>
+	<maxForce>${effort}</maxForce>
+        <maxDistance>0.05</maxDistance>
+        <minDistance>0.005</minDistance>
+      </plugin>
+  </gazebo>
+
+ <link name="vacuum_gripper3">
+      <gravity>0</gravity>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.005" length="0.01"/>
+        </geometry>
+        <material name="transparent">
+          <color rgba="0 0 0 0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+        <mass value="0.0001"/>
+        <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+      </inertial>
+    </link>
+
+    <joint name="gripper_joint3" type="revolute">
+      <axis xyz="1 0 0" />
+      <parent link="link6" />
+      <child link="vacuum_gripper3" />
+      <origin rpy="0 1.5708 0" xyz="${vac_x} 0 ${-d}" />
+      <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+      <dynamics damping="0.0" friction="10"/>
+    </joint>
+
+  <gazebo>
+      <plugin name="gazebo_ros_vacuum_gripper3" filename="libgazebo_ros_vacuum_gripper.so">
+        <robotNamespace>/arm/vacuum_gripper3</robotNamespace>
+        <updateRate>${updata}</updateRate>
+        <bodyName>vacuum_gripper3</bodyName>
+        <topicName>grasping3</topicName>
+	<maxForce>${effort}</maxForce>
+        <maxDistance>0.05</maxDistance>
+        <minDistance>0.005</minDistance>
+      </plugin>
+  </gazebo>
+
+ <link name="vacuum_gripper4">
+    <gravity>0</gravity>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0 0 0 0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint4" type="revolute">
+    <axis xyz="1 0 0" />
+    <parent link="link6" />
+    <child link="vacuum_gripper4" />
+    <origin rpy="0 1.5708 0" xyz="${vac_x} 0 0" />
+    <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+    <dynamics damping="0.0" friction="10"/>
+  </joint>
+
+  <gazebo>
+    <plugin name="gazebo_ros_vacuum_gripper4" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/arm/vacuum_gripper4</robotNamespace>
+      <updateRate>${updata}</updateRate>
+      <bodyName>vacuum_gripper4</bodyName>
+      <topicName>grasping4</topicName>
+       <maxForce>${effort}</maxForce>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.005</minDistance>
+    </plugin>
+  </gazebo>
+
+<link name="vacuum_gripper5">
+    <gravity>0</gravity>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0 0 0 0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint5" type="revolute">
+    <axis xyz="1 0 0" />
+    <parent link="link6" />
+    <child link="vacuum_gripper5" />
+    <origin rpy="0 1.5708 0" xyz="${vac_x} ${d} ${d}" />
+    <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+    <dynamics damping="0.0" friction="10"/>
+  </joint>
+
+<gazebo>
+    <plugin name="gazebo_ros_vacuum_gripper5" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/arm/vacuum_gripper5</robotNamespace>
+      <updateRate>${updata}</updateRate>
+      <bodyName>vacuum_gripper5</bodyName>
+      <topicName>grasping5</topicName>
+      <maxForce>${effort}</maxForce>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.005</minDistance>
+    </plugin>
+</gazebo>
+
+<link name="vacuum_gripper6">
+    <gravity>0</gravity>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0 0 0 0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint6" type="revolute">
+    <axis xyz="1 0 0" />
+    <parent link="link6" />
+    <child link="vacuum_gripper6" />
+    <origin rpy="0 1.5708 0" xyz="${vac_x} ${-d} ${d}" />
+    <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+    <dynamics damping="0.0" friction="10"/>
+  </joint>
+
+<gazebo>
+    <plugin name="gazebo_ros_vacuum_gripper6" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/arm/vacuum_gripper6</robotNamespace>
+      <updateRate>${updata}</updateRate>
+      <bodyName>vacuum_gripper6</bodyName>
+      <topicName>grasping6</topicName>
+       <maxForce>${effort}</maxForce>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.005</minDistance>
+    </plugin>
+</gazebo>
+
+ <link name="vacuum_gripper7">
+    <gravity>0</gravity>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0 0 0 0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint7" type="revolute">
+    <axis xyz="1 0 0" />
+    <parent link="link6" />
+    <child link="vacuum_gripper7" />
+    <origin rpy="0 1.5708 0" xyz="${vac_x} ${d} ${-d}" />
+    <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+    <dynamics damping="0.0" friction="10"/>
+  </joint>
+
+<gazebo>
+    <plugin name="gazebo_ros_vacuum_gripper7" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/arm/vacuum_gripper7</robotNamespace>
+      <updateRate>${updata}</updateRate>
+      <bodyName>vacuum_gripper7</bodyName>
+      <topicName>grasping7</topicName>
+      <maxForce>${effort}</maxForce>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.005</minDistance>
+    </plugin>
+</gazebo>
+
+ <link name="vacuum_gripper8">
+    <gravity>0</gravity>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.01"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0 0 0 0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint8" type="revolute">
+    <axis xyz="1 0 0" />
+    <parent link="link6" />
+    <child link="vacuum_gripper8" />
+    <origin rpy="0 1.5708 0" xyz="${vac_x} ${-d} ${-d}" />
+    <limit effort="${effort}" velocity="50" lower="0" upper="0" />
+    <dynamics damping="0.0" friction="10"/>
+  </joint>
+
+<gazebo>
+    <plugin name="gazebo_ros_vacuum_gripper8" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/arm/vacuum_gripper8</robotNamespace>
+      <bodyName>vacuum_gripper8</bodyName>
+      <updateRate>${updata}</updateRate>
+      <topicName>grasping8</topicName>
+      <maxForce>${effort}</maxForce>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.005</minDistance>
+    </plugin>
+</gazebo>
+
+
+
+        <!-- Grasping frame -->
+        <link name="grasping_frame">
+          <visual>
+             <origin rpy="0 0 0" xyz="0 0 0"/>
+              <geometry>
+                <box size="0.005 0.005 0.005" />
+              </geometry>
+           </visual>
+        </link>
+
+        <joint name="grasping_frame_joint" type="fixed">
+            <parent link="link6"/>
+            <child link="grasping_frame"/>
+            <origin xyz="${gripper_height} 0 0" rpy="0 0 0"/>
+        </joint>
+
+        <!-- /////////////////////////////////   Gazebo   ////////////////////////////////////// -->
+        <gazebo reference="bottom_link">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+        <gazebo reference="base_arm">
+            <material>Gazebo/DarkGrey</material>
+        </gazebo>
+        <gazebo reference="link1">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+        <gazebo reference="link2">
+            <material>Gazebo/DarkGrey</material>
+        </gazebo>
+        <gazebo reference="link3">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+        <gazebo reference="link4">
+            <material>Gazebo/DarkGrey</material>
+        </gazebo>
+        <gazebo reference="link5">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+        <gazebo reference="link6">
+            <mu1>500</mu1>
+            <mu2>500</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
+            <material>Gazebo/DarkGrey</material>
+        </gazebo>
+        <gazebo reference="grasping_frame">
+            <material>Gazebo/Red</material>
+        </gazebo>
+
+<gazebo reference="vacuum_gripper">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper8">
+                      <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper1">
+                       <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper2">
+            <mu1>500</mu1>
+            <mu2>500</mu2>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper3">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper4">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper5">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper6">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+<gazebo reference="vacuum_gripper7">
+            <mu1>100000</mu1>
+            <mu2>100000</mu2>
+  <minDepth>0.003</minDepth>
+            <maxVel>0</maxVel>
+            <kp>1.0</kp>
+            <kd>10000.0</kd>
+            <material>Gazebo/Grey</material>
+        </gazebo>
+       
+        
+        <!-- Transmissions for ROS Control -->
+        <xacro:macro name="transmission_block" params="joint_name">
+            <transmission name="${joint_name}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${joint_name}">
+                    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${joint_name}_motor">
+                    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                    <mechanicalReduction>10</mechanicalReduction>
+                </actuator>
+            </transmission>
+        </xacro:macro>
+
+        <xacro:transmission_block joint_name="joint1"/>
+        <xacro:transmission_block joint_name="joint2"/>
+        <xacro:transmission_block joint_name="joint3"/>
+        <xacro:transmission_block joint_name="joint4"/>
+        <xacro:transmission_block joint_name="joint5"/>
+        <xacro:transmission_block joint_name="joint6"/>
+
+
+
+        <!-- ros_control plugin -->
+        <gazebo>
+            <plugin name="arm_gazebo_ros_control" filename="libgazebo_ros_control.so">
+		<controlPeriod>0.004</controlPeriod>
+                <robotNamespace>/arm</robotNamespace>
+                <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+	        <legacyModeNS>true</legacyModeNS>
+            </plugin>
+        </gazebo>
+
+  </xacro:macro>
+</robot>

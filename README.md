@@ -1,10 +1,10 @@
 <img src="./assets/AMaze_logo_v2.jpg" alt="AMazeLab" width="100" height="100">
 
-# Aerial Manipulator {ignore=true}
+# Aerial Manipulator
 
 飞行机械臂
 
-## Table of Contents {ignore=true}
+## Table of Contents
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 

@@ -1,8 +1,26 @@
 <img src="./assets/AMaze_logo_v2.jpg" alt="AMazeLab" width="100" height="100">
 
-# Aerial Manipulator
+# Aerial Manipulator {ignore=true}
 
 飞行机械臂
+
+## Table of Contents {ignore=true}
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [Background](#background)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Documentation](#documentation)
+  - [Videos Tutorials](#videos-tutorials)
+- [Maintainer](#maintainer)
+- [Contributing](#contributing)
+  - [Contributors](#contributors)
+- [Licence](#licence)
+
+<!-- /code_chunk_output -->
 
 ## Background
 

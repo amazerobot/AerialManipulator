@@ -2,7 +2,9 @@
 
 # Aerial Manipulator
 
-## Overview
+飞行机械臂
+
+## Background
 
 本项目是由NCEPU_AMaze团队自主研发实现的全球首个开源飞行机械臂项目。在该项目中我们详细介绍了飞行机械臂的建模过程，控制方法和仿真手段，包括:
 
@@ -15,21 +17,37 @@
 
 本项目面向人才培养，引领行业创新，欢迎将我们的平台应用于您的项目。如果您遇到任何问题，可以通过GitHub issue/pull request或邮件与我们取得联系；我们同样在筹备飞行机械臂讨论组，期待您的加入。
 
-## Documentation
+## Installation
+
+克隆本仓库：
+
+```Shell
+cd /path/to/repo
+git clone https://github.com/amazerobot/AerialManipulator.git
+```
+
+## Usage
+
+### Documentation
 
 - [仿真环境配置](./docs/1.md)
 - [机械臂建模与机械臂运动控制](./docs/2.md)
 - [机械臂视觉](./docs/3.md)
 
-## Videos Tutorials
+### Videos Tutorials
 
 [飞行机械臂合集](https://space.bilibili.com/178988710/channel/collectiondetail?sid=204612)
 
-## Contributors
+## Maintainer
 
-<a href="https://github.com/amazerobot/AerialManipulator/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=amazerobot/AerialManipulator" />
-</a>
+[@hilinxinhui](https://github.com/hilinxinhui)
+
+## Contributing
+
+### Contributors
+
+<!-- readme: collaborators,contributors -start -->
+<!-- readme: collaborators,contributors -end -->
 
 ## Licence
 

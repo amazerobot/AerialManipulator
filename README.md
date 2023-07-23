@@ -47,6 +47,23 @@ git clone https://github.com/amazerobot/AerialManipulator.git
 ### Contributors
 
 <!-- readme: collaborators,contributors -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/hilinxinhui">
+            <img src="https://avatars.githubusercontent.com/u/72953081?v=4" width="100;" alt="hilinxinhui"/>
+            <br />
+            <sub><b>Xinhui Lin</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/zhouyiran-la">
+            <img src="https://avatars.githubusercontent.com/u/74852159?v=4" width="100;" alt="zhouyiran-la"/>
+            <br />
+            <sub><b>ZhouYiran</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: collaborators,contributors -end -->
 
 ## Licence
